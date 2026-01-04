@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English-German Library</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .library-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .library-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .library-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .library-table th:first-child {
+            border-top-left-radius: 10px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .library-table th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        .library-table td {
+            padding: 18px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .library-table tbody tr:hover {
+            background-color: #f5f5ff;
+        }
+
+        .library-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        .library-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+
+        .number-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
+            width: 80px;
+        }
+
+        .english-cell {
+            font-size: 1.05em;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .german-cell {
+            font-size: 1.05em;
+            color: #666;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .library-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .library-table {
+                font-size: 0.9em;
+            }
+
+            .library-table th,
+            .library-table td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="library-container">
+        <a href="index.html" class="back-button">← Back to Quiz</a>
+        <h1>📚 English-German Library</h1>
+        <p class="subtitle">Complete list of all quiz sentences with translations</p>
+        
+        <table class="library-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>English</th>
+                    <th>Deutsch (German)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="number-cell">1</td>
+                    <td class="english-cell">My cat thinks she's the boss of the house.</td>
+                    <td class="german-cell">Meine Katze denkt, sie ist die Chefin im Haus.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">2</td>
+                    <td class="english-cell">I can't find my socks — maybe the washing machine ate them.</td>
+                    <td class="german-cell">Ich kann meine Socken nicht finden – vielleicht hat die Waschmaschine sie gefressen.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">3</td>
+                    <td class="english-cell">My sandwich ran away… oh wait, I already ate it.</td>
+                    <td class="german-cell">Mein Sandwich ist weggelaufen… ach nein, ich habe es schon gegessen.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">4</td>
+                    <td class="english-cell">I brushed my teeth, now they are sparkling superheroes.</td>
+                    <td class="german-cell">Ich habe meine Zähne geputzt, jetzt sind sie glitzernde Superhelden.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">5</td>
+                    <td class="english-cell">My dog barks at the TV — maybe he wants to be famous.</td>
+                    <td class="german-cell">Mein Hund bellt den Fernseher an – vielleicht will er berühmt werden.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">6</td>
+                    <td class="english-cell">I tried to clean my room, but my toys started a party.</td>
+                    <td class="german-cell">Ich habe versucht, mein Zimmer aufzuräumen, aber meine Spielsachen haben eine Party gestartet.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">7</td>
+                    <td class="english-cell">My homework is hiding under the bed.</td>
+                    <td class="german-cell">Meine Hausaufgaben verstecken sich unter dem Bett.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">8</td>
+                    <td class="english-cell">I wear my hat backward because I'm a superhero in training.</td>
+                    <td class="german-cell">Ich trage meine Mütze rückwärts, weil ich ein Superheld in Ausbildung bin.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">9</td>
+                    <td class="english-cell">My banana just told me a joke — it was very a-peeling!</td>
+                    <td class="german-cell">Meine Banane hat mir gerade einen Witz erzählt – er war sehr lustig.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">10</td>
+                    <td class="english-cell">I think my pillow loves me, it never lets me go in the morning.</td>
+                    <td class="german-cell">Ich glaube, mein Kopfkissen liebt mich, es lässt mich morgens nie los.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">11</td>
+                    <td class="english-cell">My shoes are tired, they walked all day.</td>
+                    <td class="german-cell">Meine Schuhe sind müde, sie sind den ganzen Tag gelaufen.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">12</td>
+                    <td class="english-cell">I told my fish a secret — I hope he doesn't spill it.</td>
+                    <td class="german-cell">Ich habe meinem Fisch ein Geheimnis erzählt – hoffentlich plaudert er es nicht aus.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">13</td>
+                    <td class="english-cell">My ice cream disappeared — I think my tongue is the thief.</td>
+                    <td class="german-cell">Mein Eis ist verschwunden – ich glaube, meine Zunge ist der Dieb.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">14</td>
+                    <td class="english-cell">The sun smiled at me this morning.</td>
+                    <td class="german-cell">Die Sonne hat mich heute Morgen angelächelt.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">15</td>
+                    <td class="english-cell">My backpack is so full it could explode with homework.</td>
+                    <td class="german-cell">Mein Rucksack ist so voll, er könnte mit Hausaufgaben explodieren.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">16</td>
+                    <td class="english-cell">I jumped so high, I almost touched the sky.</td>
+                    <td class="german-cell">Ich bin so hoch gesprungen, ich habe fast den Himmel berührt.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">17</td>
+                    <td class="english-cell">My brother is like Wi-Fi — always interrupting my connection.</td>
+                    <td class="german-cell">Mein Bruder ist wie WLAN – er unterbricht ständig meine Verbindung.</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">18</td>
+                    <td class="english-cell">I told my computer to be quiet, but it just kept "beeping."</td>
+                    <td class="german-cell">Ich habe meinem Computer gesagt, er soll leise sein, aber er hat nur weiter „gepiept".</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">19</td>
+                    <td class="english-cell">My cookie broke in half — now I have twice the fun!</td>
+                    <td class="german-cell">Mein Keks ist in zwei Teile gebrochen – jetzt habe ich doppelt so viel Spaß!</td>
+                </tr>
+                <tr>
+                    <td class="number-cell">20</td>
+                    <td class="english-cell">I opened the fridge just to say hi to the food.</td>
+                    <td class="german-cell">Ich habe den Kühlschrank aufgemacht, nur um das Essen zu begrüßen.</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="back-button">← Back to Quiz</a>
+        </div>
+    </div>
+</body>
+</html>
+
+

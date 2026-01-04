@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .start-screen, .question-screen, .results-screen {
+            display: none;
+        }
+
+        .start-screen.active, .question-screen.active, .results-screen.active {
+            display: block;
+        }
+
+        .start-button, .next-button, .submit-button, .restart-button, .library-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            margin: 15px auto 0;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .library-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .start-button:hover, .next-button:hover, .submit-button:hover, .restart-button:hover, .library-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-button:active, .next-button:active, .submit-button:active, .restart-button:active, .library-button:active {
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .question-number {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .question-text {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #333;
+            text-align: center;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .option-button {
+            padding: 18px 25px;
+            font-size: 1.1em;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .option-button:hover {
+            border-color: #667eea;
+            background: #f5f5ff;
+            transform: translateX(5px);
+        }
+
+        .option-button.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .option-button.correct {
+            border-color: #4caf50;
+            background: #4caf50;
+            color: white;
+        }
+
+        .option-button.incorrect {
+            border-color: #f44336;
+            background: #f44336;
+            color: white;
+        }
+
+        .option-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .feedback.incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .next-button {
+            margin: 0;
+        }
+
+        .skip-button {
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        .skip-button:hover {
+            background: #e0e0e0;
+        }
+
+        .results-screen h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .score-text {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .results-summary {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .result-item.correct {
+            background-color: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .result-item.incorrect {
+            background-color: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .result-item.skipped {
+            background-color: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .result-question {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .result-answer {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .start-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Start Screen -->
+        <div class="start-screen active">
+            <h1>🎯 Interactive Quiz</h1>
+            <p class="start-description">
+                Welcome! Choose the correct word to complete each sentence.<br>
+                You'll have 4 options per question. Good luck!
+            </p>
+            <div class="button-group">
+                <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+                <a href="library.html" class="library-button" style="text-align: center;">📚 View Library</a>
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div class="question-screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-number" id="questionNumber"></div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-container" id="optionsContainer"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="button-container">
+                <button class="skip-button" onclick="skipQuestion()">Skip</button>
+                <button class="next-button" onclick="nextQuestion()" id="nextButton" disabled>Next</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-screen">
+            <h2>🎉 Quiz Complete!</h2>
+            <div class="score" id="finalScore"></div>
+            <div class="score-text" id="scoreText"></div>
+            <div class="results-summary" id="resultsSummary"></div>
+            <div class="button-group">
+                <button class="restart-button" onclick="restartQuiz()">Restart Quiz</button>
+                <a href="library.html" class="library-button" style="text-align: center;">📚 View Library</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { 
+                question: "My ___ thinks she's the boss of the house.", 
+                answer: "cat",
+                options: ["cat", "dog", "fish", "bird"]
+            },
+            { 
+                question: "I can't find my ___ — maybe the washing machine ate them.", 
+                answer: "socks",
+                options: ["socks", "shoes", "hat", "gloves"]
+            },
+            { 
+                question: "My ___ ran away… oh wait, I already ate it.", 
+                answer: "sandwich",
+                options: ["sandwich", "apple", "cookie", "banana"]
+            },
+            { 
+                question: "I brushed my ___, now they are sparkling superheroes.", 
+                answer: "teeth",
+                options: ["teeth", "hair", "hands", "shoes"]
+            },
+            { 
+                question: "My ___ barks at the TV — maybe he wants to be famous.", 
+                answer: "dog",
+                options: ["dog", "cat", "bird", "rabbit"]
+            },
+            { 
+                question: "I tried to clean my ___, but my toys started a party.", 
+                answer: "room",
+                options: ["room", "car", "desk", "garden"]
+            },
+            { 
+                question: "My ___ is hiding under the bed.", 
+                answer: "homework",
+                options: ["homework", "toy", "book", "pillow"]
+            },
+            { 
+                question: "I wear my ___ backward because I'm a superhero in training.", 
+                answer: "hat",
+                options: ["hat", "shirt", "shoes", "glasses"]
+            },
+            { 
+                question: "My ___ just told me a joke — it was very a-peeling!", 
+                answer: "banana",
+                options: ["banana", "apple", "orange", "cookie"]
+            },
+            { 
+                question: "I think my ___ loves me, it never lets me go in the morning.", 
+                answer: "pillow",
+                options: ["pillow", "bed", "blanket", "toy"]
+            },
+            { 
+                question: "My ___ are tired, they walked all day.", 
+                answer: "shoes",
+                options: ["shoes", "feet", "legs", "socks"]
+            },
+            { 
+                question: "I told my ___ a secret — I hope he doesn't spill it.", 
+                answer: "fish",
+                options: ["fish", "cat", "dog", "bird"]
+            },
+            { 
+                question: "My ___ disappeared — I think my tongue is the thief.", 
+                answer: "ice cream",
+                options: ["ice cream", "cake", "cookie", "candy"]
+            },
+            { 
+                question: "The ___ smiled at me this morning.", 
+                answer: "sun",
+                options: ["sun", "moon", "star", "cloud"]
+            },
+            { 
+                question: "My ___ is so full it could explode with homework.", 
+                answer: "backpack",
+                options: ["backpack", "desk", "room", "drawer"]
+            },
+            { 
+                question: "I jumped so ___, I almost touched the sky.", 
+                answer: "high",
+                options: ["high", "fast", "far", "long"]
+            },
+            { 
+                question: "My ___ is like Wi-Fi — always interrupting my connection.", 
+                answer: "brother",
+                options: ["brother", "sister", "friend", "teacher"]
+            },
+            { 
+                question: "I told my ___ to be quiet, but it just kept \"beeping.\"", 
+                answer: "computer",
+                options: ["computer", "phone", "radio", "alarm"]
+            },
+            { 
+                question: "My ___ broke in half — now I have twice the fun!", 
+                answer: "cookie",
+                options: ["cookie", "apple", "candy", "cracker"]
+            },
+            { 
+                question: "I opened the ___ just to say hi to the food.", 
+                answer: "fridge",
+                options: ["fridge", "cupboard", "drawer", "box"]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+        let answers = [];
+        let results = [];
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startQuiz() {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.question-screen').classList.add('active');
+            currentQuestion = 0;
+            answers = [];
+            results = [];
+            selectedAnswer = null;
+            
+            // Shuffle options for each question
+            quizData.forEach(q => {
+                q.options = shuffleArray(q.options);
+            });
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = quizData[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('nextButton').disabled = true;
+            selectedAnswer = null;
+            
+            const progress = ((currentQuestion) / quizData.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.onclick = () => selectOption(option, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectOption(option, buttonElement) {
+            if (selectedAnswer !== null) return; // Already answered
+            
+            selectedAnswer = option;
+            
+            // Remove selected class from all buttons
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked button
+            buttonElement.classList.add('selected');
+            document.getElementById('nextButton').disabled = false;
+        }
+
+        function checkAnswer() {
+            if (selectedAnswer === null) return;
+            
+            const correctAnswer = quizData[currentQuestion].answer.toLowerCase();
+            const userAnswer = selectedAnswer.toLowerCase();
+            const isCorrect = userAnswer === correctAnswer;
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.option-button');
+            
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent.toLowerCase() === correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent.toLowerCase() === userAnswer && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                feedback.textContent = '✓ Correct! Well done!';
+                feedback.classList.add('correct', 'show');
+                results.push({ 
+                    question: quizData[currentQuestion].question, 
+                    userAnswer: userAnswer, 
+                    correctAnswer: correctAnswer, 
+                    correct: true 
+                });
+            } else {
+                feedback.textContent = `✗ Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.classList.add('incorrect', 'show');
+                results.push({ 
+                    question: quizData[currentQuestion].question, 
+                    userAnswer: userAnswer, 
+                    correctAnswer: correctAnswer, 
+                    correct: false 
+                });
+            }
+            
+            answers.push(userAnswer);
+        }
+
+        function nextQuestion() {
+            if (selectedAnswer === null) {
+                // Skip without answering
+                results.push({ 
+                    question: quizData[currentQuestion].question, 
+                    userAnswer: '', 
+                    correctAnswer: quizData[currentQuestion].answer, 
+                    correct: false, 
+                    skipped: true 
+                });
+                answers.push('');
+            } else {
+                checkAnswer();
+            }
+            
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function skipQuestion() {
+            results.push({ 
+                question: quizData[currentQuestion].question, 
+                userAnswer: '', 
+                correctAnswer: quizData[currentQuestion].answer, 
+                correct: false, 
+                skipped: true 
+            });
+            answers.push('');
+            
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.querySelector('.question-screen').classList.remove('active');
+            document.querySelector('.results-screen').classList.add('active');
+            
+            const correctCount = results.filter(r => r.correct).length;
+            const totalQuestions = quizData.length;
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+            
+            document.getElementById('finalScore').textContent = `${correctCount}/${totalQuestions}`;
+            document.getElementById('scoreText').textContent = `You scored ${percentage}%!`;
+            
+            const summaryDiv = document.getElementById('resultsSummary');
+            summaryDiv.innerHTML = '';
+            
+            results.forEach((result, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'result-item';
+                
+                if (result.skipped) {
+                    itemDiv.classList.add('skipped');
+                    itemDiv.innerHTML = `
+                        <div class="result-question">${index + 1}. ${result.question.replace('___', '___')}</div>
+                        <div class="result-answer">Skipped - Correct answer: <strong>${result.correctAnswer}</strong></div>
+                    `;
+                } else if (result.correct) {
+                    itemDiv.classList.add('correct');
+                    itemDiv.innerHTML = `
+                        <div class="result-question">${index + 1}. ${result.question.replace('___', result.userAnswer)}</div>
+                        <div class="result-answer">✓ Your answer: <strong>${result.userAnswer}</strong> (Correct!)</div>
+                    `;
+                } else {
+                    itemDiv.classList.add('incorrect');
+                    itemDiv.innerHTML = `
+                        <div class="result-question">${index + 1}. ${result.question.replace('___', '___')}</div>
+                        <div class="result-answer">✗ Your answer: <strong>${result.userAnswer || '(empty)'}</strong> | Correct: <strong>${result.correctAnswer}</strong></div>
+                    `;
+                }
+                
+                summaryDiv.appendChild(itemDiv);
+            });
+        }
+
+        function restartQuiz() {
+            document.querySelector('.results-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.add('active');
+            currentQuestion = 0;
+            answers = [];
+            results = [];
+            selectedAnswer = null;
+        }
+    </script>
+</body>
+</html>
+
