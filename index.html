@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz</title>
+    <title>Interactive Flashcards</title>
     <style>
         * {
             margin: 0;
@@ -29,6 +29,7 @@
             width: 100%;
             padding: 40px;
             animation: fadeIn 0.5s ease-in;
+            position: relative;
         }
 
         @keyframes fadeIn {
@@ -56,15 +57,15 @@
             font-size: 1.1em;
         }
 
-        .start-screen, .question-screen, .results-screen {
+        .start-screen, .flashcard-screen {
             display: none;
         }
 
-        .start-screen.active, .question-screen.active, .results-screen.active {
+        .start-screen.active, .flashcard-screen.active {
             display: block;
         }
 
-        .start-button, .next-button, .submit-button, .restart-button, .library-button {
+        .start-button, .next-button, .prev-button, .restart-button, .library-button, .exit-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -83,12 +84,37 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .start-button:hover, .next-button:hover, .submit-button:hover, .restart-button:hover, .library-button:hover {
+        .exit-button {
+            background: #f2f2f7;
+            color: #666;
+            border: 1px solid #e0e0e0;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            padding: 8px 14px;
+            font-size: 0.85em;
+            margin: 0;
+            border-radius: 12px;
+            box-shadow: none;
+            z-index: 1000;
+        }
+
+        .exit-button:hover {
+            background: #e6e6ed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .exit-button:active {
+            transform: none;
+        }
+
+        .start-button:hover, .next-button:hover, .prev-button:hover, .restart-button:hover, .library-button:hover, .exit-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .start-button:active, .next-button:active, .submit-button:active, .restart-button:active, .library-button:active {
+        .start-button:active, .next-button:active, .prev-button:active, .restart-button:active, .library-button:active, .exit-button:active {
             transform: translateY(0);
         }
 
@@ -109,7 +135,7 @@
             width: 0%;
         }
 
-        .question-number {
+        .card-number {
             text-align: center;
             color: #667eea;
             font-weight: 600;
@@ -117,184 +143,80 @@
             font-size: 1.1em;
         }
 
-        .question-text {
-            font-size: 1.5em;
+        .flashcard-container {
+            perspective: 1000px;
             margin-bottom: 30px;
-            line-height: 1.6;
-            color: #333;
-            text-align: center;
+            min-height: 300px;
         }
 
-        .options-container {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .option-button {
-            padding: 18px 25px;
-            font-size: 1.1em;
-            border: 3px solid #e0e0e0;
-            border-radius: 12px;
-            background: white;
+        .flashcard {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
             cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-text {
+            font-size: 1.5em;
+            line-height: 1.6;
+            text-align: center;
             font-weight: 500;
         }
 
-        .option-button:hover {
-            border-color: #667eea;
-            background: #f5f5ff;
-            transform: translateX(5px);
-        }
-
-        .option-button.selected {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
-        }
-
-        .option-button.correct {
-            border-color: #4caf50;
-            background: #4caf50;
-            color: white;
-        }
-
-        .option-button.incorrect {
-            border-color: #f44336;
-            background: #f44336;
-            color: white;
-        }
-
-        .option-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .feedback {
-            text-align: center;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .flashcard-label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
             font-weight: 600;
-            font-size: 1.1em;
-            display: none;
-        }
-
-        .feedback.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        .feedback.correct {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .feedback.incorrect {
-            background-color: #ffebee;
-            color: #c62828;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .button-container {
             display: flex;
             gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .next-button {
+        .next-button, .prev-button {
             margin: 0;
+            flex: 1;
+            min-width: 120px;
         }
 
-        .skip-button {
-            background: #f5f5f5;
-            color: #666;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-weight: 600;
-        }
-
-        .skip-button:hover {
-            background: #e0e0e0;
-        }
-
-        .results-screen h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-
-        .score {
-            text-align: center;
-            font-size: 3em;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-
-        .score-text {
-            text-align: center;
-            color: #666;
-            font-size: 1.2em;
-            margin-bottom: 30px;
-        }
-
-        .results-summary {
-            background: #f5f5f5;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .result-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid;
-        }
-
-        .result-item.correct {
-            background-color: #e8f5e9;
-            border-left-color: #4caf50;
-        }
-
-        .result-item.incorrect {
-            background-color: #ffebee;
-            border-left-color: #f44336;
-        }
-
-        .result-item.skipped {
-            background-color: #fff3e0;
-            border-left-color: #ff9800;
-        }
-
-        .result-question {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .result-answer {
-            color: #666;
-            font-size: 0.9em;
+        .prev-button {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
         }
 
         .start-description {
@@ -310,159 +232,253 @@
             flex-direction: column;
             gap: 10px;
         }
+
+        .flip-hint {
+            text-align: center;
+            color: #666;
+            margin-top: 15px;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        .language-selector {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .language-selector h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .language-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .language-option {
+            flex: 1;
+            padding: 15px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1em;
+            color: #666;
+        }
+
+        .language-option:hover {
+            border-color: #667eea;
+            background: #f5f5ff;
+            transform: translateY(-2px);
+        }
+
+        .language-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .language-option input[type="radio"] {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="quiz-container">
         <!-- Start Screen -->
         <div class="start-screen active">
-            <h1>🎯 Interactive Quiz</h1>
+            <h1>🎴 Interactive Flashcards</h1>
             <p class="start-description">
-                Welcome! Choose the correct word to complete each sentence.<br>
-                You'll have 4 options per question. Good luck!
+                Welcome! Study English-German sentences with interactive flashcards.<br>
+                Click on a card to flip it and see the translation. Good luck!
             </p>
+            <div class="language-selector">
+                <h3>Choose Starting Language</h3>
+                <div class="language-options">
+                    <label class="language-option selected" id="englishOption" onclick="selectLanguage('english')">
+                        <input type="radio" name="language" value="english" checked>
+                        🇬🇧 English First
+                    </label>
+                    <label class="language-option" id="germanOption" onclick="selectLanguage('german')">
+                        <input type="radio" name="language" value="german">
+                        🇩🇪 German First
+                    </label>
+                </div>
+            </div>
             <div class="button-group">
-                <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+                <button class="start-button" onclick="startFlashcards()">Start Flashcards</button>
                 <a href="library.html" class="library-button" style="text-align: center;">📚 View Library</a>
             </div>
         </div>
 
-        <!-- Question Screen -->
-        <div class="question-screen">
+        <!-- Flashcard Screen -->
+        <div class="flashcard-screen">
+            <button class="exit-button" onclick="exitToMenu()">✕</button>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="question-number" id="questionNumber"></div>
-            <div class="question-text" id="questionText"></div>
-            <div class="options-container" id="optionsContainer"></div>
-            <div class="feedback" id="feedback"></div>
-            <div class="button-container">
-                <button class="skip-button" onclick="skipQuestion()">Skip</button>
-                <button class="next-button" onclick="nextQuestion()" id="nextButton" disabled>Next</button>
+            <div class="card-number" id="cardNumber"></div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                    <div class="flashcard-front">
+                        <div class="flashcard-label">English</div>
+                        <div class="flashcard-text" id="frontText"></div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-label">Deutsch</div>
+                        <div class="flashcard-text" id="backText"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- Results Screen -->
-        <div class="results-screen">
-            <h2>🎉 Quiz Complete!</h2>
-            <div class="score" id="finalScore"></div>
-            <div class="score-text" id="scoreText"></div>
-            <div class="results-summary" id="resultsSummary"></div>
-            <div class="button-group">
-                <button class="restart-button" onclick="restartQuiz()">Restart Quiz</button>
-                <a href="library.html" class="library-button" style="text-align: center;">📚 View Library</a>
+            <p class="flip-hint">Click the card to flip</p>
+            <div class="button-container">
+                <button class="prev-button" onclick="prevCard()" id="prevButton">← Previous</button>
+                <button class="next-button" onclick="nextCard()" id="nextButton">Next →</button>
             </div>
         </div>
     </div>
 
     <script>
-        const quizData = [
+        // Default flashcard data
+        const defaultFlashcardData = [
             { 
-                question: "My ___ thinks she's the boss of the house.", 
-                answer: "cat",
-                options: ["cat", "dog", "fish", "bird"]
+                english: "My cat thinks she's the boss of the house.",
+                german: "Meine Katze denkt, sie ist die Chefin im Haus."
             },
             { 
-                question: "I can't find my ___ — maybe the washing machine ate them.", 
-                answer: "socks",
-                options: ["socks", "shoes", "hat", "gloves"]
+                english: "I can't find my socks — maybe the washing machine ate them.",
+                german: "Ich kann meine Socken nicht finden – vielleicht hat die Waschmaschine sie gefressen."
             },
             { 
-                question: "My ___ ran away… oh wait, I already ate it.", 
-                answer: "sandwich",
-                options: ["sandwich", "apple", "cookie", "banana"]
+                english: "My sandwich ran away… oh wait, I already ate it.",
+                german: "Mein Sandwich ist weggelaufen… ach nein, ich habe es schon gegessen."
             },
             { 
-                question: "I brushed my ___, now they are sparkling superheroes.", 
-                answer: "teeth",
-                options: ["teeth", "hair", "hands", "shoes"]
+                english: "I brushed my teeth, now they are sparkling superheroes.",
+                german: "Ich habe meine Zähne geputzt, jetzt sind sie glitzernde Superhelden."
             },
             { 
-                question: "My ___ barks at the TV — maybe he wants to be famous.", 
-                answer: "dog",
-                options: ["dog", "cat", "bird", "rabbit"]
+                english: "My dog barks at the TV — maybe he wants to be famous.",
+                german: "Mein Hund bellt den Fernseher an – vielleicht will er berühmt werden."
             },
             { 
-                question: "I tried to clean my ___, but my toys started a party.", 
-                answer: "room",
-                options: ["room", "car", "desk", "garden"]
+                english: "I tried to clean my room, but my toys started a party.",
+                german: "Ich habe versucht, mein Zimmer aufzuräumen, aber meine Spielsachen haben eine Party gestartet."
             },
             { 
-                question: "My ___ is hiding under the bed.", 
-                answer: "homework",
-                options: ["homework", "toy", "book", "pillow"]
+                english: "My homework is hiding under the bed.",
+                german: "Meine Hausaufgaben verstecken sich unter dem Bett."
             },
             { 
-                question: "I wear my ___ backward because I'm a superhero in training.", 
-                answer: "hat",
-                options: ["hat", "shirt", "shoes", "glasses"]
+                english: "I wear my hat backward because I'm a superhero in training.",
+                german: "Ich trage meine Mütze rückwärts, weil ich ein Superheld in Ausbildung bin."
             },
             { 
-                question: "My ___ just told me a joke — it was very a-peeling!", 
-                answer: "banana",
-                options: ["banana", "apple", "orange", "cookie"]
+                english: "My banana just told me a joke — it was very a-peeling!",
+                german: "Meine Banane hat mir gerade einen Witz erzählt – er war sehr lustig."
             },
             { 
-                question: "I think my ___ loves me, it never lets me go in the morning.", 
-                answer: "pillow",
-                options: ["pillow", "bed", "blanket", "toy"]
+                english: "I think my pillow loves me, it never lets me go in the morning.",
+                german: "Ich glaube, mein Kopfkissen liebt mich, es lässt mich morgens nie los."
             },
             { 
-                question: "My ___ are tired, they walked all day.", 
-                answer: "shoes",
-                options: ["shoes", "feet", "legs", "socks"]
+                english: "My shoes are tired, they walked all day.",
+                german: "Meine Schuhe sind müde, sie sind den ganzen Tag gelaufen."
             },
             { 
-                question: "I told my ___ a secret — I hope he doesn't spill it.", 
-                answer: "fish",
-                options: ["fish", "cat", "dog", "bird"]
+                english: "I told my fish a secret — I hope he doesn't spill it.",
+                german: "Ich habe meinem Fisch ein Geheimnis erzählt – hoffentlich plaudert er es nicht aus."
             },
             { 
-                question: "My ___ disappeared — I think my tongue is the thief.", 
-                answer: "ice cream",
-                options: ["ice cream", "cake", "cookie", "candy"]
+                english: "My ice cream disappeared — I think my tongue is the thief.",
+                german: "Mein Eis ist verschwunden – ich glaube, meine Zunge ist der Dieb."
             },
             { 
-                question: "The ___ smiled at me this morning.", 
-                answer: "sun",
-                options: ["sun", "moon", "star", "cloud"]
+                english: "The sun smiled at me this morning.",
+                german: "Die Sonne hat mich heute Morgen angelächelt."
             },
             { 
-                question: "My ___ is so full it could explode with homework.", 
-                answer: "backpack",
-                options: ["backpack", "desk", "room", "drawer"]
+                english: "My backpack is so full it could explode with homework.",
+                german: "Mein Rucksack ist so voll, er könnte mit Hausaufgaben explodieren."
             },
             { 
-                question: "I jumped so ___, I almost touched the sky.", 
-                answer: "high",
-                options: ["high", "fast", "far", "long"]
+                english: "I jumped so high, I almost touched the sky.",
+                german: "Ich bin so hoch gesprungen, ich habe fast den Himmel berührt."
             },
             { 
-                question: "My ___ is like Wi-Fi — always interrupting my connection.", 
-                answer: "brother",
-                options: ["brother", "sister", "friend", "teacher"]
+                english: "My brother is like Wi-Fi — always interrupting my connection.",
+                german: "Mein Bruder ist wie WLAN – er unterbricht ständig meine Verbindung."
             },
             { 
-                question: "I told my ___ to be quiet, but it just kept \"beeping.\"", 
-                answer: "computer",
-                options: ["computer", "phone", "radio", "alarm"]
+                english: "I told my computer to be quiet, but it just kept \"beeping.\"",
+                german: "Ich habe meinem Computer gesagt, er soll leise sein, aber er hat nur weiter „gepiept\"."
             },
             { 
-                question: "My ___ broke in half — now I have twice the fun!", 
-                answer: "cookie",
-                options: ["cookie", "apple", "candy", "cracker"]
+                english: "My cookie broke in half — now I have twice the fun!",
+                german: "Mein Keks ist in zwei Teile gebrochen – jetzt habe ich doppelt so viel Spaß!"
             },
             { 
-                question: "I opened the ___ just to say hi to the food.", 
-                answer: "fridge",
-                options: ["fridge", "cupboard", "drawer", "box"]
+                english: "I opened the fridge just to say hi to the food.",
+                german: "Ich habe den Kühlschrank aufgemacht, nur um das Essen zu begrüßen."
             }
         ];
 
-        let currentQuestion = 0;
-        let selectedAnswer = null;
-        let answers = [];
-        let results = [];
+        // Load flashcard data from localStorage (synced with library) or use default.
+        // Uses only the Learning bucket; archived items are excluded.
+        function loadFlashcardData() {
+            const saved = localStorage.getItem('libraryData');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Old format: array of items
+                    if (Array.isArray(parsed)) {
+                        return parsed;
+                    }
+                    // New format: object with learning/archive
+                    if (parsed && Array.isArray(parsed.learning)) {
+                        return parsed.learning;
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse flashcard data, using defaults', e);
+                }
+            }
+            return defaultFlashcardData;
+        }
+
+        let flashcardData = loadFlashcardData();
+        let currentCard = 0;
+        let isFlipped = false;
+        let startLanguage = 'english'; // 'english' or 'german'
+
+        function selectLanguage(lang) {
+            startLanguage = lang;
+            // Update visual selection
+            const englishOption = document.getElementById('englishOption');
+            const germanOption = document.getElementById('germanOption');
+            const englishRadio = document.querySelector('input[value="english"]');
+            const germanRadio = document.querySelector('input[value="german"]');
+            
+            if (lang === 'english') {
+                englishOption.classList.add('selected');
+                germanOption.classList.remove('selected');
+                englishRadio.checked = true;
+                germanRadio.checked = false;
+            } else {
+                germanOption.classList.add('selected');
+                englishOption.classList.remove('selected');
+                germanRadio.checked = true;
+                englishRadio.checked = false;
+            }
+        }
 
         function shuffleArray(array) {
             const shuffled = [...array];
@@ -473,193 +489,100 @@
             return shuffled;
         }
 
-        function startQuiz() {
+        function startFlashcards() {
+            // Reload data from localStorage in case library was updated
+            flashcardData = loadFlashcardData();
+            if (flashcardData.length === 0) {
+                alert('No flashcards available. Please add some examples in the library first.');
+                return;
+            }
             document.querySelector('.start-screen').classList.remove('active');
-            document.querySelector('.question-screen').classList.add('active');
-            currentQuestion = 0;
-            answers = [];
-            results = [];
-            selectedAnswer = null;
-            
-            // Shuffle options for each question
-            quizData.forEach(q => {
-                q.options = shuffleArray(q.options);
-            });
-            
-            showQuestion();
+            document.querySelector('.flashcard-screen').classList.add('active');
+            currentCard = 0;
+            isFlipped = false;
+            showCard();
         }
 
-        function showQuestion() {
-            const question = quizData[currentQuestion];
-            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
-            document.getElementById('questionText').textContent = question.question;
-            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
-            document.getElementById('nextButton').disabled = true;
-            selectedAnswer = null;
+        function exitToMenu() {
+            if (confirm('Are you sure you want to exit to the main menu?')) {
+                document.querySelector('.flashcard-screen').classList.remove('active');
+                document.querySelector('.start-screen').classList.add('active');
+                currentCard = 0;
+                isFlipped = false;
+            }
+        }
+
+        function showCard() {
+            const card = flashcardData[currentCard];
+            const frontLabel = document.querySelector('.flashcard-front .flashcard-label');
+            const backLabel = document.querySelector('.flashcard-back .flashcard-label');
             
-            const progress = ((currentQuestion) / quizData.length) * 100;
+            // Set content based on selected starting language
+            if (startLanguage === 'english') {
+                document.getElementById('frontText').textContent = card.english;
+                document.getElementById('backText').textContent = card.german;
+                frontLabel.textContent = 'English';
+                backLabel.textContent = 'Deutsch';
+            } else {
+                document.getElementById('frontText').textContent = card.german;
+                document.getElementById('backText').textContent = card.english;
+                frontLabel.textContent = 'Deutsch';
+                backLabel.textContent = 'English';
+            }
+            
+            document.getElementById('cardNumber').textContent = `Card ${currentCard + 1} of ${flashcardData.length}`;
+            
+            // Reset card flip state
+            isFlipped = false;
+            document.getElementById('flashcard').classList.remove('flipped');
+            
+            // Update progress
+            const progress = ((currentCard + 1) / flashcardData.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
             
-            const optionsContainer = document.getElementById('optionsContainer');
-            optionsContainer.innerHTML = '';
-            
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-button';
-                button.textContent = option;
-                button.onclick = () => selectOption(option, button);
-                optionsContainer.appendChild(button);
-            });
+            // Update button states
+            document.getElementById('prevButton').disabled = currentCard === 0;
+            document.getElementById('nextButton').disabled = currentCard === flashcardData.length - 1;
         }
 
-        function selectOption(option, buttonElement) {
-            if (selectedAnswer !== null) return; // Already answered
-            
-            selectedAnswer = option;
-            
-            // Remove selected class from all buttons
-            document.querySelectorAll('.option-button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
-            // Add selected class to clicked button
-            buttonElement.classList.add('selected');
-            document.getElementById('nextButton').disabled = false;
+        function flipCard() {
+            isFlipped = !isFlipped;
+            document.getElementById('flashcard').classList.toggle('flipped');
         }
 
-        function checkAnswer() {
-            if (selectedAnswer === null) return;
-            
-            const correctAnswer = quizData[currentQuestion].answer.toLowerCase();
-            const userAnswer = selectedAnswer.toLowerCase();
-            const isCorrect = userAnswer === correctAnswer;
-            const feedback = document.getElementById('feedback');
-            const buttons = document.querySelectorAll('.option-button');
-            
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent.toLowerCase() === correctAnswer) {
-                    btn.classList.add('correct');
-                } else if (btn.textContent.toLowerCase() === userAnswer && !isCorrect) {
-                    btn.classList.add('incorrect');
-                }
-            });
-            
-            if (isCorrect) {
-                feedback.textContent = '✓ Correct! Well done!';
-                feedback.classList.add('correct', 'show');
-                results.push({ 
-                    question: quizData[currentQuestion].question, 
-                    userAnswer: userAnswer, 
-                    correctAnswer: correctAnswer, 
-                    correct: true 
-                });
-            } else {
-                feedback.textContent = `✗ Incorrect. The correct answer is: ${correctAnswer}`;
-                feedback.classList.add('incorrect', 'show');
-                results.push({ 
-                    question: quizData[currentQuestion].question, 
-                    userAnswer: userAnswer, 
-                    correctAnswer: correctAnswer, 
-                    correct: false 
-                });
-            }
-            
-            answers.push(userAnswer);
-        }
-
-        function nextQuestion() {
-            if (selectedAnswer === null) {
-                // Skip without answering
-                results.push({ 
-                    question: quizData[currentQuestion].question, 
-                    userAnswer: '', 
-                    correctAnswer: quizData[currentQuestion].answer, 
-                    correct: false, 
-                    skipped: true 
-                });
-                answers.push('');
-            } else {
-                checkAnswer();
-            }
-            
-            if (currentQuestion < quizData.length - 1) {
-                currentQuestion++;
-                showQuestion();
-            } else {
-                showResults();
+        function nextCard() {
+            if (currentCard < flashcardData.length - 1) {
+                currentCard++;
+                showCard();
             }
         }
 
-        function skipQuestion() {
-            results.push({ 
-                question: quizData[currentQuestion].question, 
-                userAnswer: '', 
-                correctAnswer: quizData[currentQuestion].answer, 
-                correct: false, 
-                skipped: true 
-            });
-            answers.push('');
-            
-            if (currentQuestion < quizData.length - 1) {
-                currentQuestion++;
-                showQuestion();
-            } else {
-                showResults();
+        function prevCard() {
+            if (currentCard > 0) {
+                currentCard--;
+                showCard();
             }
         }
 
-        function showResults() {
-            document.querySelector('.question-screen').classList.remove('active');
-            document.querySelector('.results-screen').classList.add('active');
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const flashcardScreen = document.querySelector('.flashcard-screen.active');
+            if (!flashcardScreen) return;
             
-            const correctCount = results.filter(r => r.correct).length;
-            const totalQuestions = quizData.length;
-            const percentage = Math.round((correctCount / totalQuestions) * 100);
-            
-            document.getElementById('finalScore').textContent = `${correctCount}/${totalQuestions}`;
-            document.getElementById('scoreText').textContent = `You scored ${percentage}%!`;
-            
-            const summaryDiv = document.getElementById('resultsSummary');
-            summaryDiv.innerHTML = '';
-            
-            results.forEach((result, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'result-item';
-                
-                if (result.skipped) {
-                    itemDiv.classList.add('skipped');
-                    itemDiv.innerHTML = `
-                        <div class="result-question">${index + 1}. ${result.question.replace('___', '___')}</div>
-                        <div class="result-answer">Skipped - Correct answer: <strong>${result.correctAnswer}</strong></div>
-                    `;
-                } else if (result.correct) {
-                    itemDiv.classList.add('correct');
-                    itemDiv.innerHTML = `
-                        <div class="result-question">${index + 1}. ${result.question.replace('___', result.userAnswer)}</div>
-                        <div class="result-answer">✓ Your answer: <strong>${result.userAnswer}</strong> (Correct!)</div>
-                    `;
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (e.key === ' ') {
+                    flipCard();
                 } else {
-                    itemDiv.classList.add('incorrect');
-                    itemDiv.innerHTML = `
-                        <div class="result-question">${index + 1}. ${result.question.replace('___', '___')}</div>
-                        <div class="result-answer">✗ Your answer: <strong>${result.userAnswer || '(empty)'}</strong> | Correct: <strong>${result.correctAnswer}</strong></div>
-                    `;
+                    nextCard();
                 }
-                
-                summaryDiv.appendChild(itemDiv);
-            });
-        }
-
-        function restartQuiz() {
-            document.querySelector('.results-screen').classList.remove('active');
-            document.querySelector('.start-screen').classList.add('active');
-            currentQuestion = 0;
-            answers = [];
-            results = [];
-            selectedAnswer = null;
-        }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevCard();
+            } else if (e.key === 'Escape') {
+                exitToMenu();
+            }
+        });
     </script>
 </body>
 </html>
-

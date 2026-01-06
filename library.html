@@ -73,6 +73,101 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
 
+        .add-form {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .add-form h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .add-button {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            height: fit-content;
+        }
+
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .section-title h2 {
+            font-size: 1.6em;
+        }
+
+        .section-subtitle {
+            color: #888;
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+
+        .bucket-section {
+            margin-top: 25px;
+        }
+
         .library-table {
             width: 100%;
             border-collapse: collapse;
@@ -96,6 +191,8 @@
 
         .library-table th:last-child {
             border-top-right-radius: 10px;
+            width: 100px;
+            text-align: center;
         }
 
         .library-table td {
@@ -136,6 +233,62 @@
             font-style: italic;
         }
 
+        .remove-button {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .remove-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .action-cell {
+            text-align: center;
+            width: 100px;
+        }
+
+        .archive-button {
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .archive-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .restore-button {
+            background: linear-gradient(135deg, #26a69a 0%, #009688 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .restore-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 150, 136, 0.4);
+        }
+
         @media (max-width: 768px) {
             .library-container {
                 padding: 20px;
@@ -153,132 +306,236 @@
             .library-table td {
                 padding: 12px 8px;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .remove-button {
+                padding: 6px 15px;
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="library-container">
-        <a href="index.html" class="back-button">← Back to Quiz</a>
+        <a href="index.html" class="back-button">← Back to Flashcards</a>
         <h1>📚 English-German Library</h1>
-        <p class="subtitle">Complete list of all quiz sentences with translations</p>
+        <p class="subtitle">Manage what you’re learning vs. what’s archived</p>
         
-        <table class="library-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>English</th>
-                    <th>Deutsch (German)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="number-cell">1</td>
-                    <td class="english-cell">My cat thinks she's the boss of the house.</td>
-                    <td class="german-cell">Meine Katze denkt, sie ist die Chefin im Haus.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">2</td>
-                    <td class="english-cell">I can't find my socks — maybe the washing machine ate them.</td>
-                    <td class="german-cell">Ich kann meine Socken nicht finden – vielleicht hat die Waschmaschine sie gefressen.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">3</td>
-                    <td class="english-cell">My sandwich ran away… oh wait, I already ate it.</td>
-                    <td class="german-cell">Mein Sandwich ist weggelaufen… ach nein, ich habe es schon gegessen.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">4</td>
-                    <td class="english-cell">I brushed my teeth, now they are sparkling superheroes.</td>
-                    <td class="german-cell">Ich habe meine Zähne geputzt, jetzt sind sie glitzernde Superhelden.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">5</td>
-                    <td class="english-cell">My dog barks at the TV — maybe he wants to be famous.</td>
-                    <td class="german-cell">Mein Hund bellt den Fernseher an – vielleicht will er berühmt werden.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">6</td>
-                    <td class="english-cell">I tried to clean my room, but my toys started a party.</td>
-                    <td class="german-cell">Ich habe versucht, mein Zimmer aufzuräumen, aber meine Spielsachen haben eine Party gestartet.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">7</td>
-                    <td class="english-cell">My homework is hiding under the bed.</td>
-                    <td class="german-cell">Meine Hausaufgaben verstecken sich unter dem Bett.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">8</td>
-                    <td class="english-cell">I wear my hat backward because I'm a superhero in training.</td>
-                    <td class="german-cell">Ich trage meine Mütze rückwärts, weil ich ein Superheld in Ausbildung bin.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">9</td>
-                    <td class="english-cell">My banana just told me a joke — it was very a-peeling!</td>
-                    <td class="german-cell">Meine Banane hat mir gerade einen Witz erzählt – er war sehr lustig.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">10</td>
-                    <td class="english-cell">I think my pillow loves me, it never lets me go in the morning.</td>
-                    <td class="german-cell">Ich glaube, mein Kopfkissen liebt mich, es lässt mich morgens nie los.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">11</td>
-                    <td class="english-cell">My shoes are tired, they walked all day.</td>
-                    <td class="german-cell">Meine Schuhe sind müde, sie sind den ganzen Tag gelaufen.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">12</td>
-                    <td class="english-cell">I told my fish a secret — I hope he doesn't spill it.</td>
-                    <td class="german-cell">Ich habe meinem Fisch ein Geheimnis erzählt – hoffentlich plaudert er es nicht aus.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">13</td>
-                    <td class="english-cell">My ice cream disappeared — I think my tongue is the thief.</td>
-                    <td class="german-cell">Mein Eis ist verschwunden – ich glaube, meine Zunge ist der Dieb.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">14</td>
-                    <td class="english-cell">The sun smiled at me this morning.</td>
-                    <td class="german-cell">Die Sonne hat mich heute Morgen angelächelt.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">15</td>
-                    <td class="english-cell">My backpack is so full it could explode with homework.</td>
-                    <td class="german-cell">Mein Rucksack ist so voll, er könnte mit Hausaufgaben explodieren.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">16</td>
-                    <td class="english-cell">I jumped so high, I almost touched the sky.</td>
-                    <td class="german-cell">Ich bin so hoch gesprungen, ich habe fast den Himmel berührt.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">17</td>
-                    <td class="english-cell">My brother is like Wi-Fi — always interrupting my connection.</td>
-                    <td class="german-cell">Mein Bruder ist wie WLAN – er unterbricht ständig meine Verbindung.</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">18</td>
-                    <td class="english-cell">I told my computer to be quiet, but it just kept "beeping."</td>
-                    <td class="german-cell">Ich habe meinem Computer gesagt, er soll leise sein, aber er hat nur weiter „gepiept".</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">19</td>
-                    <td class="english-cell">My cookie broke in half — now I have twice the fun!</td>
-                    <td class="german-cell">Mein Keks ist in zwei Teile gebrochen – jetzt habe ich doppelt so viel Spaß!</td>
-                </tr>
-                <tr>
-                    <td class="number-cell">20</td>
-                    <td class="english-cell">I opened the fridge just to say hi to the food.</td>
-                    <td class="german-cell">Ich habe den Kühlschrank aufgemacht, nur um das Essen zu begrüßen.</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Add Form -->
+        <div class="add-form">
+            <h2>➕ Add New Example</h2>
+            <form id="addForm" onsubmit="addExample(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="englishInput">English</label>
+                        <input type="text" id="englishInput" required placeholder="Enter English sentence">
+                    </div>
+                    <div class="form-group">
+                        <label for="germanInput">Deutsch (German)</label>
+                        <input type="text" id="germanInput" required placeholder="Enter German translation">
+                    </div>
+                    <button type="submit" class="add-button">Add</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="bucket-section">
+            <div class="section-title">
+                <h2>Learning bucket</h2>
+                <span class="section-subtitle" id="learningCount"></span>
+            </div>
+            <table class="library-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>English</th>
+                        <th>Deutsch (German)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="learningTableBody">
+                    <!-- Learning rows -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bucket-section">
+            <div class="section-title">
+                <h2>Archive</h2>
+                <span class="section-subtitle" id="archiveCount"></span>
+            </div>
+            <table class="library-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>English</th>
+                        <th>Deutsch (German)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="archiveTableBody">
+                    <!-- Archive rows -->
+                </tbody>
+            </table>
+        </div>
         
         <div style="text-align: center; margin-top: 30px;">
-            <a href="index.html" class="back-button">← Back to Quiz</a>
+            <a href="index.html" class="back-button">← Back to Flashcards</a>
         </div>
     </div>
+
+    <script>
+        // Default library data (seeded into the Learning bucket)
+        const defaultLibraryData = [
+            { english: "My cat thinks she's the boss of the house.", german: "Meine Katze denkt, sie ist die Chefin im Haus." },
+            { english: "I can't find my socks — maybe the washing machine ate them.", german: "Ich kann meine Socken nicht finden – vielleicht hat die Waschmaschine sie gefressen." },
+            { english: "My sandwich ran away… oh wait, I already ate it.", german: "Mein Sandwich ist weggelaufen… ach nein, ich habe es schon gegessen." },
+            { english: "I brushed my teeth, now they are sparkling superheroes.", german: "Ich habe meine Zähne geputzt, jetzt sind sie glitzernde Superhelden." },
+            { english: "My dog barks at the TV — maybe he wants to be famous.", german: "Mein Hund bellt den Fernseher an – vielleicht will er berühmt werden." },
+            { english: "I tried to clean my room, but my toys started a party.", german: "Ich habe versucht, mein Zimmer aufzuräumen, aber meine Spielsachen haben eine Party gestartet." },
+            { english: "My homework is hiding under the bed.", german: "Meine Hausaufgaben verstecken sich unter dem Bett." },
+            { english: "I wear my hat backward because I'm a superhero in training.", german: "Ich trage meine Mütze rückwärts, weil ich ein Superheld in Ausbildung bin." },
+            { english: "My banana just told me a joke — it was very a-peeling!", german: "Meine Banane hat mir gerade einen Witz erzählt – er war sehr lustig." },
+            { english: "I think my pillow loves me, it never lets me go in the morning.", german: "Ich glaube, mein Kopfkissen liebt mich, es lässt mich morgens nie los." },
+            { english: "My shoes are tired, they walked all day.", german: "Meine Schuhe sind müde, sie sind den ganzen Tag gelaufen." },
+            { english: "I told my fish a secret — I hope he doesn't spill it.", german: "Ich habe meinem Fisch ein Geheimnis erzählt – hoffentlich plaudert er es nicht aus." },
+            { english: "My ice cream disappeared — I think my tongue is the thief.", german: "Mein Eis ist verschwunden – ich glaube, meine Zunge ist der Dieb." },
+            { english: "The sun smiled at me this morning.", german: "Die Sonne hat mich heute Morgen angelächelt." },
+            { english: "My backpack is so full it could explode with homework.", german: "Mein Rucksack ist so voll, er könnte mit Hausaufgaben explodieren." },
+            { english: "I jumped so high, I almost touched the sky.", german: "Ich bin so hoch gesprungen, ich habe fast den Himmel berührt." },
+            { english: "My brother is like Wi-Fi — always interrupting my connection.", german: "Mein Bruder ist wie WLAN – er unterbricht ständig meine Verbindung." },
+            { english: "I told my computer to be quiet, but it just kept \"beeping.\"", german: "Ich habe meinem Computer gesagt, er soll leise sein, aber er hat nur weiter „gepiept\"." },
+            { english: "My cookie broke in half — now I have twice the fun!", german: "Mein Keks ist in zwei Teile gebrochen – jetzt habe ich doppelt so viel Spaß!" },
+            { english: "I opened the fridge just to say hi to the food.", german: "Ich habe den Kühlschrank aufgemacht, nur um das Essen zu begrüßen." }
+        ];
+
+        const STORAGE_KEY = 'libraryData';
+
+        // Load library data from localStorage; migrate old formats if needed
+        function loadLibraryData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Old format: array of items
+                    if (Array.isArray(parsed)) {
+                        return { learning: parsed, archive: [] };
+                    }
+                    // New format: object with learning/archive
+                    if (parsed && Array.isArray(parsed.learning) && Array.isArray(parsed.archive)) {
+                        return parsed;
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse library data, resetting to default', e);
+                }
+            }
+            // Default: seed learning with defaults, empty archive
+            return { learning: [...defaultLibraryData], archive: [] };
+        }
+
+        // Save library data to localStorage
+        function saveLibraryData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Render both tables
+        function renderLibrary() {
+            const libraryData = loadLibraryData();
+            renderTable('learningTableBody', libraryData.learning, 'learning');
+            renderTable('archiveTableBody', libraryData.archive, 'archive');
+            document.getElementById('learningCount').textContent = `${libraryData.learning.length} items`;
+            document.getElementById('archiveCount').textContent = `${libraryData.archive.length} items`;
+        }
+
+        function renderTable(tbodyId, items, mode) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+
+            if (!items.length) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" style="text-align:center; color:#888; padding:18px;">No examples here yet.</td>
+                `;
+                tbody.appendChild(row);
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const row = document.createElement('tr');
+                let actionButton;
+                if (mode === 'learning') {
+                    actionButton = `<button class="archive-button" onclick="moveToArchive(${index})">Archive</button>`;
+                } else {
+                    actionButton = `<button class="restore-button" onclick="restoreFromArchive(${index})">Restore</button>`;
+                }
+                row.innerHTML = `
+                    <td class="number-cell">${index + 1}</td>
+                    <td class="english-cell">${escapeHtml(item.english)}</td>
+                    <td class="german-cell">${escapeHtml(item.german)}</td>
+                    <td class="action-cell">
+                        ${actionButton}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add a new example
+        function addExample(event) {
+            event.preventDefault();
+            const englishInput = document.getElementById('englishInput');
+            const germanInput = document.getElementById('germanInput');
+
+            const english = englishInput.value.trim();
+            const german = germanInput.value.trim();
+
+            if (english && german) {
+                const libraryData = loadLibraryData();
+                libraryData.learning.push({ english, german });
+                saveLibraryData(libraryData);
+                renderLibrary();
+                
+                // Clear form
+                englishInput.value = '';
+                germanInput.value = '';
+                englishInput.focus();
+            }
+        }
+
+        // Move to archive
+        function moveToArchive(index) {
+            const data = loadLibraryData();
+            const [item] = data.learning.splice(index, 1);
+            if (item) {
+                data.archive.push(item);
+                saveLibraryData(data);
+                renderLibrary();
+            }
+        }
+
+        // Restore from archive
+        function restoreFromArchive(index) {
+            const data = loadLibraryData();
+            const [item] = data.archive.splice(index, 1);
+            if (item) {
+                data.learning.push(item);
+                saveLibraryData(data);
+                renderLibrary();
+            }
+        }
+
+        // Initialize on page load
+        renderLibrary();
+    </script>
 </body>
 </html>
-
-
